@@ -9,39 +9,32 @@ import { many2OneField, Many2OneField } from "@web/views/fields/many2one/many2on
 
 // Base
 export class Many2OneImageField extends Component {
-    static template = "web_widget_image_field.Many2OneImageField";
-    static components = {
-        Many2OneField,
-    };
-    static props = {
-        ...Many2OneField.props,
-    };
-
     get relation() {
-        return this.props.relation || this.props.record.fields[this.props.name].relation;
-    }
-    get many2OneProps() {
-        return Object.fromEntries(
-            Object.entries(this.props).filter(
-                ([key, _val]) => key in this.constructor.components.Many2OneField.props
-            )
-        );
+        return this.props.relation;
     }
     get imageSize() {
-        return this.props.options.size || 'image_128';
+        return this.props.size || 'image_128';
     }
 }
 
-export const many2OneImageField = {
-    ...many2OneField,
-    component: Many2OneImageField,
-    additionalClasses: ["o_field_many2one_image"],
-    extractProps(fieldInfo) {
-        const props = many2OneField.extractProps(...arguments);
-        props.canOpen = fieldInfo.viewType === "form";
-        props.options = fieldInfo.options;
-        return props;
-    },
+Many2OneImageField.template = "web_widget_image_field.Many2OneImageField";
+Many2OneImageField.additionalClasses = ["o_field_many2one_avatar", "o_field_many2one_image"];
+
+Many2OneImageField.components = {
+    Many2OneField,
+};
+Many2OneImageField.props = {
+    ...Many2OneField.props,
+    size: { type: String, optional: true },
+};
+Many2OneImageField.extractProps = ({ attrs }) => {
+    return {
+        size: attrs.options.size,
+    };
 };
 
-registry.category("fields").add("many2one_image", many2OneImageField);
+Many2OneImageField.supportedTypes = ["many2one"];
+
+Many2OneImageField.extractProps = Many2OneField.extractProps;
+
+registry.category("fields").add("many2one_image", Many2OneImageField);
